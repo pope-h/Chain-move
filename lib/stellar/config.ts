@@ -21,13 +21,10 @@ function getDefaultExplorerBaseUrl(network: string) {
 
 export function getStellarConfig(): StellarConfig {
   const network = process.env.STELLAR_NETWORK || "testnet"
-  const mock = process.env.ENABLE_MOCK_STELLAR ? process.env.ENABLE_MOCK_STELLAR === "true" : process.env.NODE_ENV !== "production"
+  const mock = process.env.ENABLE_MOCK_STELLAR === "true"
 
   return {
     network,
-export function getStellarConfig() {
-  return {
-    network: process.env.STELLAR_NETWORK || "testnet",
     horizonUrl: process.env.STELLAR_HORIZON_URL || "https://horizon-testnet.stellar.org",
     rpcUrl: process.env.STELLAR_RPC_URL || process.env.RPC_URL || "https://soroban-testnet.stellar.org",
     assetCode: process.env.STELLAR_ASSET_CODE || "CMOVE",
@@ -52,7 +49,4 @@ export function buildStellarReferenceUrl(reference: string, config = getStellarC
 
   const baseUrl = config.explorerBaseUrl.replace(/\/$/, "")
   return `${baseUrl}/tx/${encodeURIComponent(normalizedReference)}`
-}
-    mock: process.env.ENABLE_MOCK_STELLAR === "true",
-  }
 }
