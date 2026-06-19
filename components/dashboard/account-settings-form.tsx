@@ -268,6 +268,8 @@ export function AccountSettingsForm({ roleLabel, kycHref }: AccountSettingsFormP
       </Card>
 
       <div className="space-y-6">
+        <StellarLinkForm onLinked={() => void loadProfile()} />
+
         <Card className="border-border/70">
           <CardHeader>
             <CardTitle>Account Snapshot</CardTitle>
