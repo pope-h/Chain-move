@@ -233,6 +233,7 @@ export async function GET(request: Request) {
       const kycStatusFilter = searchParams.get("status") || ""
       const kycQuery: Record<string, unknown> = { kycStatus: { $nin: ["none", null] }, ...dateMatch("createdAt", startDate, endDate) }
       if (["pending", "approved", "rejected"].includes(kycStatusFilter)) kycQuery.kycStatus = kycStatusFilter
+      const kycUsers = await User.find(kycQuery).select("name fullName email role kycStatus kycVerified createdAt").sort({ createdAt: -1 }).lean()
       return NextResponse.json({ message: "KYC export coming soon." }, { status: 501 })
     }
 
