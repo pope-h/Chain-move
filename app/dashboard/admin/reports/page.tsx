@@ -164,6 +164,15 @@ export default async function AdminReportsPage({ searchParams }: ReportsPageProp
   const fundedPools = Number(poolSummary.find((entry: any) => String(entry._id).toUpperCase() === "FUNDED")?.count || 0)
   const activePools = openPools + fundedPools
 
+  if (tab === "fleet") {
+    const vQuery: Record<string, unknown> = {}
+    if (["Available", "Financed", "Reserved", "Maintenance", "Retired"].includes(vehicleStatusFilter)) vQuery.status = vehicleStatusFilter
+    ;[vehicleStatusCounts, recentVehicles] = await Promise.all([
+      Vehicle.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
+      Vehicle.find(vQuery).select("name identifier type year price status fundingStatus totalFundedAmount addedDate").sort({ addedDate: -1 }).limit(15).lean(),
+    ])
+  }
+
   if (tab === "kyc") {
     const kycQuery: Record<string, unknown> = { kycStatus: { $nin: ["none", null] } }
     if (["pending", "approved", "rejected"].includes(kycStatusFilter)) kycQuery.kycStatus = kycStatusFilter
