@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach } from "vitest"
-import { getStellarConfig } from "./config"
+import { getStellarConfig, parseStellarNetwork } from "./config"
 
 describe("getStellarConfig", () => {
   const originalEnv = { ...process.env }
@@ -48,10 +48,8 @@ describe("getStellarConfig", () => {
     })
   })
 
-  it("should return configuration with custom environment overrides", () => {
+  it("should resolve mainnet defaults and custom environment overrides", () => {
     process.env.STELLAR_NETWORK = "mainnet"
-    process.env.STELLAR_HORIZON_URL = "https://horizon.stellar.org"
-    process.env.STELLAR_RPC_URL = "https://soroban-mainnet.stellar.org"
     process.env.STELLAR_ASSET_CODE = "TEST"
     process.env.STELLAR_ISSUER_PUBLIC_KEY = "GD123..."
     process.env.STELLAR_DISTRIBUTION_PUBLIC_KEY = "GD456..."
@@ -71,6 +69,13 @@ describe("getStellarConfig", () => {
       mock: false,
       demoPublicKey: "GABCDMOCKSTELLARPUBLICKEYTESTNET000000000000000000000000000000",
     })
+  })
+
+  it("should reject unsupported networks instead of falling back to testnet", () => {
+    process.env.STELLAR_NETWORK = "futurenet"
+
+    expect(() => getStellarConfig()).toThrow('Invalid Stellar network "futurenet". Expected "testnet" or "mainnet".')
+    expect(() => parseStellarNetwork("futurenet")).toThrow(/Invalid Stellar network/)
   })
 
   it("should support RPC_URL and CHAINMOVE_CA fallbacks when STELLAR_ RPC/contract variables are missing", () => {
