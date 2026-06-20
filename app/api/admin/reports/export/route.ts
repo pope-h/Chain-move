@@ -246,6 +246,11 @@ export async function GET(request: Request) {
     }
 
 
+    // ── fleet ─────────────────────────────────────────────────────────────────
+    if (type === "fleet") {
+      return NextResponse.json({ message: "Fleet export coming soon." }, { status: 501 })
+    }
+
     const repayments = await DriverPayment.find({
       status: "CONFIRMED",
       ...dateMatch("createdAt", startDate, endDate),
